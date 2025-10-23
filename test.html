@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Birthday Wish Game</title>
+<style>
+  body {
+    margin: 0; padding: 0;
+    background: linear-gradient(135deg, #fceabb, #f8b500);
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    overflow: hidden;
+  }
+  h1 {
+    text-align: center;
+    margin-top: 20px;
+    color: #d64a8c;
+    text-shadow: 2px 2px 5px #97305f;
+  }
+
+  .balloon {
+    position: absolute;
+    bottom: -150px;
+    width: 80px; height: 110px;
+    background: radial-gradient(circle at center, #ff6bb4 40%, #c02883);
+    border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+    cursor: pointer;
+    animation: floatUp linear infinite;
+    box-shadow: inset -5px -10px 15px #e068a2;
+  }
+
+  .balloon::after {
+    content: "";
+    position: absolute;
+    width: 6px; height: 60px;
+    background: #a22875;
+    bottom: -60px; left: 50%;
+    margin-left: -3px;
+  }
+
+  @keyframes floatUp {
+    0% {bottom: -150px; opacity: 1;}
+    90% {opacity: 1;}
+    100% {bottom: 110vh; opacity: 0;}
+  }
+
+  .confetti {
+    position: fixed;
+    width: 10px; height: 10px;
+    background: red;
+    opacity: 0;
+    pointer-events: none;
+    animation: confetti-fall 2s ease forwards;
+  }
+
+  @keyframes confetti-fall {
+    0% {opacity: 1; transform: translateY(0) rotate(0deg);}
+    100% {opacity: 0; transform: translateY(300px) rotate(360deg);}
+  }
+
+  #message {
+    position: absolute;
+    top: 40%;
+    width: 100%;
+    text-align: center;
+    font-size: 2.5em;
+    color: #d64a8c;
+    text-shadow: 0 0 10px #ff9ecb;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    user-select: none;
+  }
+
+  #message.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  footer {
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    color: #78255c;
+    font-size: 1.2em;
+  }
+</style>
+</head>
+<body>
+  <h1>Bauni Click the Balloons for a Birthday Surprise!</h1>
+
+  <div id="game-area"></div>
+
+  <div id="message">🎉 Happy Birthday Anvesha! 🎂🎈</div>
+
+  <footer>Made with ❤️ for choti si ladki</footer>
+
+<script>
+  const gameArea = document.getElementById('game-area');
+  const message = document.getElementById('message');
+
+  // Generate random balloons with different positions and timings
+  function createBalloon() {
+    const balloon = document.createElement('div');
+    balloon.classList.add('balloon');
+
+    // random horizontal position
+    balloon.style.left = Math.random() * 90 + 'vw';
+
+    // random animation duration between 5-9 seconds
+    balloon.style.animationDuration = 5 + Math.random() * 4 + 's';
+
+    // floating animation delay so they don't float simultaneously
+    balloon.style.animationDelay = (Math.random() * 10) + 's';
+
+    gameArea.appendChild(balloon);
+
+    balloon.onclick = () => {
+      // Confetti burst at balloon position
+      burstConfetti(balloon);
+
+      // Show birthday message with animation
+      showMessage();
+
+      // Remove balloon on click
+      balloon.remove();
+    };
+  }
+
+  // Confetti effect near clicked balloon
+  function burstConfetti(balloon) {
+    const rect = balloon.getBoundingClientRect();
+
+    for (let i = 0; i < 15; i++) {
+      const confetti = document.createElement('div');
+      confetti.classList.add('confetti');
+      confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 65%)`;
+
+      confetti.style.left = (rect.left + rect.width/2 + (Math.random() * 100 - 50)) + 'px';
+      confetti.style.top = (rect.top + rect.height/2 + (Math.random() * 100 - 50)) + 'px';
+
+      document.body.appendChild(confetti);
+
+      // Remove confetti after animation
+      confetti.addEventListener('animationend', () => confetti.remove());
+    }
+  }
+
+  // Show message with fade in and scale up effect
+  function showMessage() {
+    message.classList.add('show');
+    setTimeout(() => {
+      message.classList.remove('show');
+    }, 4000);
+  }
+
+  // Continuously create balloons every 2 seconds for the game
+  setInterval(createBalloon, 2000);
+
+  // Initial batch of balloons
+  for (let i = 0; i < 6; i++) {
+    setTimeout(createBalloon, i * 700);
+  }
+</script>
+</body>
+</html>
